@@ -13,6 +13,10 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
+/**
+ * 文档控制器：提供文档的创建、编辑、逻辑删除、分页查询与详情接口。
+ * <p>写操作均校验文档归属（仅 owner 可操作）；详情接口走 Redis 缓存。
+ */
 @Tag(name = "文档管理", description = "文档CRUD接口")
 @RestController
 @RequestMapping("/api/documents")
@@ -21,6 +25,12 @@ public class DocumentController {
 
     private final IDocumentService documentService;
 
+    /**
+     * 创建文档，归属当前登录用户。
+     *
+     * @param dto 文档标题（必填）、内容、分类、是否公开
+     * @return data 为新建文档的 ID
+     */
     @Operation(summary = "创建文档")
     @PostMapping
     public Result<Long> create(@RequestBody @Valid DocumentDTO dto) {
@@ -37,6 +47,13 @@ public class DocumentController {
         return Result.success(doc.getId());
     }
 
+    /**
+     * 编辑文档（仅 owner 可改）。
+     *
+     * @param id  文档 ID
+     * @param dto 新的标题/内容/分类
+     * @return 成功 code=200；不存在 404；非本人 403
+     */
     @Operation(summary = "编辑文档")
     @PutMapping("/{id}")
     public Result<?> update(@PathVariable Long id, @RequestBody @Valid DocumentDTO dto) {
@@ -62,6 +79,12 @@ public class DocumentController {
         return Result.success();
     }
 
+    /**
+     * 删除文档（逻辑删除，仅 owner 可删）。
+     *
+     * @param id 文档 ID
+     * @return 成功 code=200；不存在 404；非本人 403
+     */
     @Operation(summary = "删除文档(逻辑删除)")
     @DeleteMapping("/{id}")
     public Result<?> delete(@PathVariable Long id) {
@@ -79,6 +102,12 @@ public class DocumentController {
         return Result.success();
     }
 
+    /**
+     * 分页查询当前用户的文档列表。
+     *
+     * @param queryDTO 分页与查询条件
+     * @return 分页结果
+     */
     @Operation(summary = "分页查询我的文档")
     @GetMapping("/page")
     public Result<Page<Document>> page(DocumentQueryDTO queryDTO) {
@@ -87,12 +116,18 @@ public class DocumentController {
         return Result.success(page);
     }
 
+    /**
+     * 查询文档详情（走 Redis 缓存，仅 owner 可见）。
+     *
+     * @param id 文档 ID
+     * @return 文档实体；不存在 404；非本人 403
+     */
     @Operation(summary = "查询文档详情")
     @GetMapping("/{id}")
     public Result<Document> detail(@PathVariable Long id) {
         Long currentUserId = UserContext.getUserId();
 
-        Document doc = documentService.getById(id);
+        Document doc = documentService.getDocWithCache(id);
         if (doc == null) {
             return Result.error(404, "文档不存在或已被删除");
         }

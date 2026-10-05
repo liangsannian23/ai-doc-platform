@@ -3,6 +3,10 @@ package com.aidoc.aidocplatform.service;
 import com.aidoc.aidocplatform.entity.User;
 import com.baomidou.mybatisplus.extension.service.IService;
 
+/**
+ * 用户服务接口：在基础 CRUD 之上提供带 Redis 缓存的用户读取与缓存失效。
+ * <p>继承 MyBatis-Plus {@link IService} 以获得基础 CRUD 能力。
+ */
 public interface IUserService extends IService<User> {
 
     // ===== 新增：带缓存的用户读取 =====

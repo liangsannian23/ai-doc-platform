@@ -11,7 +11,8 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.RequiredArgsConstructor;
-import org.springframework.amqp.rabbit.RabbitTemplate;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,6 +23,7 @@ import java.util.concurrent.TimeUnit;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class DocumentServiceImpl extends ServiceImpl<DocumentMapper, Document>
         implements IDocumentService {
 
@@ -36,11 +38,13 @@ public class DocumentServiceImpl extends ServiceImpl<DocumentMapper, Document>
         String key = "doc:hot:" + docId;
         Object cached = redisTemplate.opsForValue().get(key);
         if (cached != null) {
+            log.debug("[Cache HIT] key={}", key);
             return (Document) cached;
         }
         Document doc = this.getById(docId);
         if (doc != null) {
             redisTemplate.opsForValue().set(key, doc, DOC_TTL, TimeUnit.SECONDS);
+            log.debug("[Cache MISS->WRITE] key={}", key);
         }
         return doc;
     }
@@ -77,6 +81,7 @@ public class DocumentServiceImpl extends ServiceImpl<DocumentMapper, Document>
         boolean ok = super.removeById(id); // MP 逻辑删除
         if (ok) {
             redisTemplate.delete("doc:hot:" + id);   // 清缓存
+            log.debug("[Cache EVICT] key=doc:hot:{}", id);
             sendDocMessage((Long) id, null, "DELETE"); // 发 DELETE 消息
         }
         return ok;
@@ -94,7 +99,7 @@ public class DocumentServiceImpl extends ServiceImpl<DocumentMapper, Document>
     }
 
     @Override
-    public IPage<Document> queryMyDocuments(Long userId, DocumentQueryDTO queryDTO) {
+    public Page<Document> queryMyDocuments(Long userId, DocumentQueryDTO queryDTO) {
         LambdaQueryWrapper<Document> wrapper = new LambdaQueryWrapper<>();
         wrapper.eq(Document::getOwnerId, userId);
         if (queryDTO.getCategoryId() != null) {

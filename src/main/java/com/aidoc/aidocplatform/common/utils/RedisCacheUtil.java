@@ -8,9 +8,9 @@ import org.springframework.stereotype.Component;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
 
-@org.springframework.stereotype.Service
+@Component
 @RequiredArgsConstructor
-@lombok.extern.slf4j.Slf4j
+@Slf4j
 public class RedisCacheUtil {
 
     private final RedisTemplate<String, Object> redisTemplate;

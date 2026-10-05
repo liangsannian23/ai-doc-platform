@@ -69,3 +69,8 @@ mybatis-plus:
   configuration:
     map-underscore-to-camel-case: true
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+
+# 日志级别：调试缓存命中/失效（[Cache HIT]/[Cache MISS->WRITE]/[Cache EVICT]）与 MQ 消费
+logging:
+  level:
+    com.aidoc: debug

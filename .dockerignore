@@ -1,0 +1,16 @@
+# 构建镜像时忽略这些，避免把无关文件塞进构建上下文、拖慢 build
+# 注意：不能排除整个 target/ 目录，否则下面的 ! 反排除会失效；
+# 这里排除 target 下除 jar 外的所有内容
+target/*
+!target/*.jar
+.idea/
+*.iml
+mvnw
+mvnw.cmd
+.mvn/
+.git/
+.gitattributes
+*.log
+HELP.md
+Dockerfile
+.dockerignore

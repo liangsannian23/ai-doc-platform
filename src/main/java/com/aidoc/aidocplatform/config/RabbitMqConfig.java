@@ -1,7 +1,7 @@
 package com.aidoc.aidocplatform.config;
 
 import org.springframework.amqp.core.*;
-import org.springframework.amqp.rabbit.RabbitTemplate;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -28,14 +28,14 @@ public class RabbitMqConfig {
 
     @Bean
     public Binding docBinding() {
-        return BindingBuilder.bind(QUEUE).to(docExchange()).with(ROUTING_KEY);
+        return BindingBuilder.bind(docNotifyQueue()).to(docExchange()).with(ROUTING_KEY);
     }
 
     // ===== 死信结构 =====
     @Bean public DirectExchange docDlx() { return new DirectExchange("doc.dlx", true, false); }
     @Bean public Queue docDeadQueue() { return QueueBuilder.durable("doc.dead.queue").build(); }
     @Bean public Binding docDeadBinding() {
-        return BindingBuilder.bind("doc.dead.queue").to(docDlx()).with("doc.dead");
+        return BindingBuilder.bind(docDeadQueue()).to(docDlx()).with("doc.dead");
     }
 
     // JSON 消息转换器（生产/消费统一用 JSON）
