@@ -1,0 +1,22 @@
+{
+  "name": "ai-doc-platform-frontend",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "description": "智能内容协作平台 - React 前端",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "axios": "^1.7.4",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-router-dom": "^6.26.1"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^4.3.1",
+    "vite": "^5.4.2"
+  }
+}
