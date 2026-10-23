@@ -1,8 +1,0 @@
-feat: 阶段6 云原生收尾 - Docker化、文档与Javadoc
-
-- 新增 Dockerfile：非root运行、JVM容器内存感知、HEALTHCHECK、优雅停机
-- 新增 .dockerignore 与 README（技术栈/快速启动/Docker部署/架构/错误码/限流降级/FAQ）
-- 为核心 Controller 与 Service 接口补全类级与方法级 Javadoc
-- docker.env 经 --env-file 注入密钥与中间件地址，已加入 .gitignore 不提交
-- 修正 RedisCacheUtil 文件名拼写
-- 验证容器内注册/登录/AI摘要端到端可用
