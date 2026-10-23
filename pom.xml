@@ -118,6 +118,11 @@
             <groupId>org.springframework.ai</groupId>
             <artifactId>spring-ai-starter-model-openai</artifactId>
         </dependency>
+        <!-- Spring AI 向量存储：提供 VectorStore / SimpleVectorStore / SearchRequest（RAG 用），版本由 spring-ai-bom 管理 -->
+        <dependency>
+            <groupId>org.springframework.ai</groupId>
+            <artifactId>spring-ai-vector-store</artifactId>
+        </dependency>
     </dependencies>
 
     <build>

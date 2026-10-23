@@ -32,6 +32,10 @@ spring:
         options:
           model: ${SPARK_MODEL:spark-x2.5-1.7b}
           temperature: 0.7
+      embedding:                                 # RAG 用的文本向量化模型（讯飞 MaaS）
+        embeddings-path: /v2/embeddings          # 讯飞 embedding 在 /v2，Spring AI 默认拼 /v1，必须显式覆盖（与 chat 同理）
+        options:
+          model: ${SPARK_EMBEDDING_MODEL:please-set-spark-embedding-model-id}  # 真实值由环境变量 SPARK_EMBEDDING_MODEL 注入（取讯飞“调用示例”里的 model 编码），仓库只留占位符
     # 如需切回 OpenAI 官方：注释掉上面 openai 块，改用下面这套
     # openai:
     #   api-key: ${OPENAI_API_KEY}
